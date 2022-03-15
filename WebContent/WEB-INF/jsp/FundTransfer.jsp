@@ -165,6 +165,7 @@ $( function() {
 	 	$('#CreditDebitButton').prop('disabled', false);	
 	 });
 	 $( "#complete" ).click(function() {
+		 $('#fundTransfer').attr('action', './CashTransactionContoller');
 		 $( "#flow" ).val("cash");
 		 $( "#fromAccountCash" ).val($( "#accNum" ).val());
 	 });
