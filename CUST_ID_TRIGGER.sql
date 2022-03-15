@@ -1,0 +1,9 @@
+create or replace TRIGGER CUSTOMERS_trig 
+BEFORE INSERT ON CUSTOMERS 
+FOR EACH ROW
+
+BEGIN
+  SELECT seq_custId.NEXTVAL
+  INTO   :new.CustId
+  FROM   dual;
+END;
