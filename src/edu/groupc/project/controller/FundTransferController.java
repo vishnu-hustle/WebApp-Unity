@@ -90,13 +90,7 @@ public class FundTransferController extends HttpServlet {
 				request.setAttribute("status", "Transferred succesfully!!");
 			else
 				request.setAttribute("status", "Failed to Transfer Amount!!");
-		} else {
-			success = this.cashTransaction(request);
-			if (success)
-				request.setAttribute("status", "Transaction done succesfully!!");
-			else
-				request.setAttribute("status", "Transaction Failed!!");
-		}
+		} 
 
 		request.getRequestDispatcher("WEB-INF/jsp/FundTransfer.jsp").forward(request, response);
 	}
