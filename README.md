@@ -15,5 +15,7 @@ https://stackoverflow.com/questions/19460236/add-tomcat-jar-lib-directory-to-ecl
 
 #Add ojdbc14.jar to the project through buildpath
 
+#RUN SQL SCRIPTS FROM PRESENT IN THE REPO
+
 
 
