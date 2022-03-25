@@ -37,8 +37,8 @@ String responseStr=(String)request.getAttribute("status");
 request.removeAttribute("status");
 System.out.println(responseStr);
 %>
-	<div class="navbar">
-		<a class="active" href="./AccountDetailsController"><i class="fa fa-fw fa-institution"></i>
+<div class="navbar">
+		<a class="active" href="./AccountHomeController"><i class="fa fa-fw fa-institution"></i>
 			Home</a> <a href="./CustomerProfileController"><i
 			class="fa fa-fw fa-user-circle-o"></i> Customer Profile</a> <a
 			href="./AccountDetailsController"><i class="fa fa-fw fa-group"></i>
@@ -69,7 +69,7 @@ for (Entry<String, AccountDetailsValueBean> entry : userValueBean.getAccountDeta
 	AccountDetailsValueBean accountDetailsValueBean = (AccountDetailsValueBean) entry.getValue();
 	%>
 		<tr>
-			<td><input type="radio" id="accNum"
+			<td><input type="radio" id="accNum" name="accNum"
 				value="<%=accountDetailsValueBean.getAccountNumber()%>" /><%
             out.print(accountDetailsValueBean.getAccountNumber());
         %></td>
@@ -140,7 +140,7 @@ $( function() {
 		    	$( "#removeAccNum" ).val( $(this).val());
     	$( "#addDiv" ).hide();
     	$('#removeAccount').prop('disabled', false);
-    	$('#addAccount').prop('disabled', true);	
+    	$('#addAccount').prop('disabled', false);	
       	
     });
 });

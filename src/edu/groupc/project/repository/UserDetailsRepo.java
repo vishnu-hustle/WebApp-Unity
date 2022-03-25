@@ -34,17 +34,15 @@ public class UserDetailsRepo {
 	 * 
 	 * @param loginForm
 	 * @return UserValueBean
+	 * @throws SQLException
 	 */
-	public UserValueBean fetchUserDetails(LoginForm loginForm, Connection con) {
+	public UserValueBean fetchUserDetails(LoginForm loginForm, Connection con) throws SQLException {
 
 		UserValueBean userValueBean = UserValueBean.getInstance();
-
+		ResultSet rs = null;
+		PreparedStatement stmt = null;
 		try {
-
-			ResultSet rs = null;
-			PreparedStatement stmt = null;
 			stmt = con.prepareStatement(SqlQueries.GET_CUSTOMER);
-
 			stmt.setString(1, loginForm.getUserName());
 			stmt.setString(2, loginForm.getPassword());
 			rs = stmt.executeQuery();
@@ -61,6 +59,12 @@ public class UserDetailsRepo {
 
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+
+			if (rs != null) {
+				rs.close();
+			}
+
 		}
 		return userValueBean;
 	}
@@ -75,16 +79,16 @@ public class UserDetailsRepo {
 	 */
 	public Map<String, AccountDetailsValueBean> setAccounts(
 			Map<String, AccountDetailsValueBean> accountDetailsValueBeanList, ResultSet rs) throws SQLException {
-
-		while (rs.next()) {
-			AccountDetailsValueBean accountDetailsValueBean = new AccountDetailsValueBean();
-			accountDetailsValueBean.setAccountNumber(rs.getString(1));
-			accountDetailsValueBean.setIfscCode(rs.getString(3));
-			accountDetailsValueBean.setBranchName(rs.getString(4));
-			accountDetailsValueBean.setBalance(rs.getFloat(5));
-			accountDetailsValueBeanList.put(accountDetailsValueBean.getAccountNumber(), accountDetailsValueBean);
+		if (rs != null) {
+			while (rs.next()) {
+				AccountDetailsValueBean accountDetailsValueBean = new AccountDetailsValueBean();
+				accountDetailsValueBean.setAccountNumber(rs.getString(1));
+				accountDetailsValueBean.setIfscCode(rs.getString(3));
+				accountDetailsValueBean.setBranchName(rs.getString(4));
+				accountDetailsValueBean.setBalance(rs.getFloat(5));
+				accountDetailsValueBeanList.put(accountDetailsValueBean.getAccountNumber(), accountDetailsValueBean);
+			}
 		}
-
 		return accountDetailsValueBeanList;
 	}
 
@@ -98,16 +102,18 @@ public class UserDetailsRepo {
 	public CustomerDetailsValueBean setCustomerDetails(ResultSet rs) throws SQLException {
 
 		CustomerDetailsValueBean customerDetailsValueBean = null;
-		while (rs.next()) {
-			customerDetailsValueBean = new CustomerDetailsValueBean();
-			customerDetailsValueBean.setCustomerId(String.valueOf(rs.getInt(1)));
-			customerDetailsValueBean.setUserName(rs.getString(2));
-			customerDetailsValueBean.setEmail(rs.getString(4));
-			customerDetailsValueBean.setFirstName(rs.getString(5));
-			customerDetailsValueBean.setLastName(rs.getString(6));
-			customerDetailsValueBean.setDateOfBirth(String.valueOf(rs.getDate(7).toLocalDate()));
-			customerDetailsValueBean.setAddress(rs.getString(8));
-			customerDetailsValueBean.setPhoneNumber(rs.getString(9));
+		if (rs != null) {
+			while (rs.next()) {
+				customerDetailsValueBean = new CustomerDetailsValueBean();
+				customerDetailsValueBean.setCustomerId(String.valueOf(rs.getInt(1)));
+				customerDetailsValueBean.setUserName(rs.getString(2));
+				customerDetailsValueBean.setEmail(rs.getString(4));
+				customerDetailsValueBean.setFirstName(rs.getString(5));
+				customerDetailsValueBean.setLastName(rs.getString(6));
+				customerDetailsValueBean.setDateOfBirth(String.valueOf(rs.getDate(7).toLocalDate()));
+				customerDetailsValueBean.setAddress(rs.getString(8));
+				customerDetailsValueBean.setPhoneNumber(rs.getString(9));
+			}
 		}
 		return customerDetailsValueBean;
 	}
@@ -116,14 +122,14 @@ public class UserDetailsRepo {
 	 * This method updates the customer details to the DB
 	 * 
 	 * @param userValueBean
+	 * @throws SQLException
 	 */
-	public void updateCustomerDetails(UserValueBean userValueBean, Connection con) {
-
+	public boolean updateCustomerDetails(UserValueBean userValueBean, Connection con) throws SQLException {
+		int result = 0;
+		PreparedStatement stmt = null;
 		try {
 			CustomerDetailsValueBean customerDetailsValueBean = userValueBean.getCustomerDetailsValueBean();
 
-			int result = 0;
-			PreparedStatement stmt = null;
 			stmt = con.prepareStatement(SqlQueries.UPDATE_CUSTOMER_DETAILS);
 
 			stmt.setString(1, customerDetailsValueBean.getUserName());
@@ -139,7 +145,13 @@ public class UserDetailsRepo {
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			return false;
+		} finally {
+			if (stmt != null) {
+				stmt.close();
+			}
 		}
+		return result != 0 ? true : false;
 
 	}
 
@@ -149,20 +161,19 @@ public class UserDetailsRepo {
 	 * @param userValueBean
 	 * @param cashTransactionFormBean
 	 * @return Map<String, AccountDetailsValueBean>
+	 * @throws SQLException
 	 */
 	public Map<String, AccountDetailsValueBean> updateCashTransaction(UserValueBean userValueBean,
-			CashTransactionFormBean cashTransactionFormBean, Connection con) {
+			CashTransactionFormBean cashTransactionFormBean, Connection con) throws SQLException {
 		Map<String, AccountDetailsValueBean> accountDetailsValueBeans = userValueBean.getAccountDetailsValueBean();
+		int result = 0;
+		PreparedStatement stmt = null;
 		for (Entry<String, AccountDetailsValueBean> entry : accountDetailsValueBeans.entrySet()) {
 
 			if (entry.getKey().equals(cashTransactionFormBean.getAccountNumber())) {
-				System.out.println("done");
 				AccountDetailsValueBean accountDetailsValueBean = (AccountDetailsValueBean) entry.getValue();
 				try {
-					CustomerDetailsValueBean customerDetailsValueBean = userValueBean.getCustomerDetailsValueBean();
 
-					int result = 0;
-					PreparedStatement stmt = null;
 					stmt = con.prepareStatement(SqlQueries.UPDATE_CASH_TRANSACTION);
 
 					if (cashTransactionFormBean.isCredit()) {
@@ -181,6 +192,10 @@ public class UserDetailsRepo {
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
+				} finally {
+					if (stmt != null) {
+						stmt.close();
+					}
 				}
 
 			}
@@ -196,17 +211,16 @@ public class UserDetailsRepo {
 	 * @param userValueBean
 	 * @param removeAccountFormBean
 	 * @return Map<String, AccountDetailsValueBean>
+	 * @throws SQLException
 	 */
 	public Map<String, AccountDetailsValueBean> removeAccount(UserValueBean userValueBean,
-			RemoveAccountFormBean removeAccountFormBean, Connection con) {
+			RemoveAccountFormBean removeAccountFormBean, Connection con) throws SQLException {
 		Map<String, AccountDetailsValueBean> accountDetailsValueBeans = userValueBean.getAccountDetailsValueBean();
-
+		int result = 0;
+		PreparedStatement stmt = null;
 		try {
 			CustomerDetailsValueBean customerDetailsValueBean = userValueBean.getCustomerDetailsValueBean();
-			int result = 0;
-			PreparedStatement stmt = null;
 			stmt = con.prepareStatement(SqlQueries.DELETE_CUSTOMER);
-
 			stmt.setInt(1, Integer.parseInt(removeAccountFormBean.getAccountNumber()));
 			stmt.setInt(2, Integer.parseInt(customerDetailsValueBean.getCustomerId()));
 			result = stmt.executeUpdate();
@@ -216,6 +230,10 @@ public class UserDetailsRepo {
 
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			if (stmt != null) {
+				stmt.close();
+			}
 		}
 		return accountDetailsValueBeans;
 	}
@@ -226,16 +244,17 @@ public class UserDetailsRepo {
 	 * @param userValueBean
 	 * @param addAccountFormBean
 	 * @return Map<String, AccountDetailsValueBean>
+	 * @throws SQLException
 	 */
 	public Map<String, AccountDetailsValueBean> addAccount(UserValueBean userValueBean,
-			AddAccountFormBean addAccountFormBean, Connection con) {
+			AddAccountFormBean addAccountFormBean, Connection con) throws SQLException {
 		Map<String, AccountDetailsValueBean> accountDetailsValueBeans = userValueBean.getAccountDetailsValueBean();
+		PreparedStatement stmt = null;
 
 		try {
 			AccountDetailsValueBean accountDetailsValueBean = addAccountFormBean.getAccountDetailsValueBean();
 			CustomerDetailsValueBean customerDetailsValueBean = userValueBean.getCustomerDetailsValueBean();
-			PreparedStatement stmt = con.prepareStatement(SqlQueries.ADD_ACCOUNT);
-
+			stmt = con.prepareStatement(SqlQueries.ADD_ACCOUNT);
 			stmt.setString(1, accountDetailsValueBean.getAccountNumber());
 			stmt.setInt(2, Integer.parseInt(customerDetailsValueBean.getCustomerId()));
 			stmt.setString(3, accountDetailsValueBean.getIfscCode());
@@ -249,6 +268,10 @@ public class UserDetailsRepo {
 
 		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			if (stmt != null) {
+				stmt.close();
+			}
 		}
 		return accountDetailsValueBeans;
 	}
@@ -265,16 +288,14 @@ public class UserDetailsRepo {
 	public Map<String, AccountDetailsValueBean> transferAmount(UserValueBean userValueBean,
 			FundTransferFormBean fundTransferFormBean, Connection con) throws Exception {
 		Map<String, AccountDetailsValueBean> accountDetailsValueBeans = userValueBean.getAccountDetailsValueBean();
+		int result = 0;
+		PreparedStatement stmt = null;
 		try {
-
-			int result = 0;
-			PreparedStatement stmt = null;
-
+			con.setAutoCommit(false);
 			AccountDetailsValueBean primaryAccount = accountDetailsValueBeans
 					.get(fundTransferFormBean.getAccountNumber());
 			primaryAccount.setBalance(primaryAccount.getBalance() - fundTransferFormBean.getTransferAmount());
 			stmt = con.prepareStatement(SqlQueries.UPDATE_MAIN_ACCOUNT_BALANCE);
-
 			stmt.setDouble(1, primaryAccount.getBalance());
 			stmt.setString(2, primaryAccount.getAccountNumber());
 			result = stmt.executeUpdate();
@@ -283,11 +304,9 @@ public class UserDetailsRepo {
 				if (fundTransferFormBean.isWithin()) {
 					AccountDetailsValueBean secondary = accountDetailsValueBeans
 							.get(fundTransferFormBean.getTransferAccountNumber());
-					System.out.println(fundTransferFormBean.getTransferAmount());
 					if (secondary != null) {
 						secondary.setBalance(secondary.getBalance() + fundTransferFormBean.getTransferAmount());
 						stmt = con.prepareStatement(SqlQueries.UPDATE_CHILD_ACCOUNT_BALANCE);
-
 						stmt.setDouble(1, secondary.getBalance());
 						stmt.setString(2, secondary.getAccountNumber());
 						stmt.setString(3, secondary.getIfscCode());
@@ -296,15 +315,6 @@ public class UserDetailsRepo {
 						result = 0;
 					}
 					if (result == 0) {
-						primaryAccount
-								.setBalance(primaryAccount.getBalance() + fundTransferFormBean.getTransferAmount());
-						accountDetailsValueBeans.put(primaryAccount.getAccountNumber(), primaryAccount);
-						stmt = con.prepareStatement(SqlQueries.UPDATE_MAIN_ACCOUNT_BALANCE);
-
-						stmt.setDouble(1, primaryAccount.getBalance());
-						stmt.setString(2, primaryAccount.getAccountNumber());
-						result = stmt.executeUpdate();
-
 						throw new Exception("Transfer account Not Found");
 					} else {
 
@@ -320,30 +330,25 @@ public class UserDetailsRepo {
 						balance = rset.getDouble(1);
 					}
 					balance += fundTransferFormBean.getTransferAmount();
-
 					stmt = con.prepareStatement(SqlQueries.UPDATE_TRANSFER_ACCOUNT_BALANCE);
-
 					stmt.setDouble(1, balance);
 					stmt.setString(2, fundTransferFormBean.getTransferAccountNumber());
 					stmt.setString(3, fundTransferFormBean.getTransferIfscCode());
 					result = stmt.executeUpdate();
 					if (result == 0) {
-						primaryAccount
-								.setBalance(primaryAccount.getBalance() + fundTransferFormBean.getTransferAmount());
-						accountDetailsValueBeans.put(primaryAccount.getAccountNumber(), primaryAccount);
-						stmt = con.prepareStatement(SqlQueries.UPDATE_MAIN_ACCOUNT_BALANCE);
-
-						stmt.setDouble(1, primaryAccount.getBalance());
-						stmt.setString(2, primaryAccount.getAccountNumber());
-						result = stmt.executeUpdate();
 						throw new Exception("Transfer account Not Found");
 					}
 				}
 			}
-
+			con.commit();
 		} catch (Exception e) {
 			e.printStackTrace();
+			con.rollback();
 			throw new Exception("Transfer Failed");
+		} finally {
+			if (stmt != null) {
+				stmt.close();
+			}
 		}
 		return accountDetailsValueBeans;
 	}

@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 import com.sun.org.slf4j.internal.Logger;
 import com.sun.org.slf4j.internal.LoggerFactory;
 
-import edu.groupc.project.beans.CashTransactionFormBean;
 import edu.groupc.project.beans.FundTransferFormBean;
 import edu.groupc.project.beans.UserValueBean;
 import edu.groupc.project.dbconfig.DbConfig;
@@ -90,7 +89,7 @@ public class FundTransferController extends HttpServlet {
 				request.setAttribute("status", "Transferred succesfully!!");
 			else
 				request.setAttribute("status", "Failed to Transfer Amount!!");
-		} 
+		}
 
 		request.getRequestDispatcher("WEB-INF/jsp/FundTransfer.jsp").forward(request, response);
 	}
@@ -119,35 +118,6 @@ public class FundTransferController extends HttpServlet {
 			e.printStackTrace();
 			return false;
 		}
-	}
-
-	protected boolean cashTransaction(HttpServletRequest request) {
-		CashTransactionFormBean cashTransactionFormBean = new CashTransactionFormBean();
-		cashTransactionFormBean.setAccountNumber(request.getParameter("fromAccountCash"));
-		int type = Integer.parseInt(request.getParameter("transactionType"));
-		if (type == 2) {
-			cashTransactionFormBean.setDebit(true);
-			cashTransactionFormBean.setCredit(false);
-
-		} else {
-			cashTransactionFormBean.setDebit(false);
-			cashTransactionFormBean.setCredit(true);
-		}
-		UserValueBean userValueBean = (UserValueBean) request.getSession().getAttribute("user");
-		cashTransactionFormBean.setAmount(Double.parseDouble(request.getParameter("amountCash")));
-		try {
-			UpdateService updateService = new UpdateServiceImpl();
-
-			userValueBean.setAccountDetailsValueBean(
-					updateService.updateCashTransaction(userValueBean, cashTransactionFormBean, connection));
-			request.getSession().removeAttribute("user");
-			request.getSession().setAttribute("user", userValueBean);
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-
 	}
 
 }

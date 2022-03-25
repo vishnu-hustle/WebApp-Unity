@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.sun.org.slf4j.internal.Logger;
 import com.sun.org.slf4j.internal.LoggerFactory;
 
-import edu.groupc.project.beans.CustomerDetailsValueBean;
+import edu.groupc.project.beans.CashTransactionFormBean;
 import edu.groupc.project.beans.UserValueBean;
 import edu.groupc.project.dbconfig.DbConfig;
 import edu.groupc.project.service.UpdateService;
@@ -24,17 +24,17 @@ import edu.groupc.project.service.UpdateServiceImpl;
 /**
  * Servlet implementation class ApplicationStart
  */
-@WebServlet("/CustomerProfileController")
-public class CustomerProfileController extends HttpServlet {
+@WebServlet("/CashTransactionController")
+public class CashTransactionController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerProfileController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CashTransactionController.class);
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
 	Connection connection = null;
 
-	public CustomerProfileController() {
+	public CashTransactionController() {
 		super();
 
 	}
@@ -72,7 +72,7 @@ public class CustomerProfileController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		request.getRequestDispatcher("WEB-INF/jsp/CustomerProfile.jsp").forward(request, response);
+		request.getRequestDispatcher("WEB-INF/jsp/FundTransfer.jsp").forward(request, response);
 	}
 
 	/**
@@ -81,34 +81,44 @@ public class CustomerProfileController extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		UserValueBean userValueBean = (UserValueBean) request.getSession().getAttribute("user");
-		CustomerDetailsValueBean customerProfile = userValueBean.getCustomerDetailsValueBean();
-		this.getFromBean(request, customerProfile);
-		try {
-			userValueBean.setCustomerDetailsValueBean(customerProfile);
-			UpdateService updateService = new UpdateServiceImpl();
-			if (updateService.updateCustomerDetails(userValueBean, connection)) {
-				request.setAttribute("status", "updated Sucessfully!!");
-			} else {
-				request.setAttribute("status", "update Failed!!!");
-			}
-		} catch (Exception e) {
-			request.setAttribute("status", "update Failed!!!");
-			LOGGER.error("Customer Profile update Exception: " + e.toString());
-		}
+		boolean success;
 
-		request.getRequestDispatcher("WEB-INF/jsp/CustomerProfile.jsp").forward(request, response);
+		success = this.cashTransaction(request);
+		if (success)
+			request.setAttribute("status", "Transaction done succesfully!!");
+		else
+			request.setAttribute("status", "Transaction Failed!!");
 
+		request.getRequestDispatcher("WEB-INF/jsp/FundTransfer.jsp").forward(request, response);
 	}
 
-	private void getFromBean(HttpServletRequest request, CustomerDetailsValueBean customerProfile) {
-		customerProfile.setFirstName(request.getParameter("firstname"));
-		customerProfile.setLastName(request.getParameter("lastname"));
-		customerProfile.setAddress(request.getParameter("address"));
-		customerProfile.setDateOfBirth(request.getParameter("dob"));
-		customerProfile.setEmail(request.getParameter("emailId"));
-		customerProfile.setUserName(request.getParameter("username"));
-		customerProfile.setPhoneNumber(request.getParameter("phoneNumber"));
+	protected boolean cashTransaction(HttpServletRequest request) {
+		CashTransactionFormBean cashTransactionFormBean = new CashTransactionFormBean();
+		cashTransactionFormBean.setAccountNumber(request.getParameter("fromAccountCash"));
+		int type = Integer.parseInt(request.getParameter("transactionType"));
+		if (type == 2) {
+			cashTransactionFormBean.setDebit(true);
+			cashTransactionFormBean.setCredit(false);
+
+		} else {
+			cashTransactionFormBean.setDebit(false);
+			cashTransactionFormBean.setCredit(true);
+		}
+		UserValueBean userValueBean = (UserValueBean) request.getSession().getAttribute("user");
+		cashTransactionFormBean.setAmount(Double.parseDouble(request.getParameter("amountCash")));
+		try {
+			UpdateService updateService = new UpdateServiceImpl();
+
+			userValueBean.setAccountDetailsValueBean(
+					updateService.updateCashTransaction(userValueBean, cashTransactionFormBean, connection));
+			request.getSession().removeAttribute("user");
+			request.getSession().setAttribute("user", userValueBean);
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+
 	}
 
 }

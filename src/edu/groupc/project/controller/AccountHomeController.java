@@ -15,26 +15,22 @@ import javax.servlet.http.HttpServletResponse;
 import com.sun.org.slf4j.internal.Logger;
 import com.sun.org.slf4j.internal.LoggerFactory;
 
-import edu.groupc.project.beans.LoginForm;
-import edu.groupc.project.beans.UserValueBean;
 import edu.groupc.project.dbconfig.DbConfig;
-import edu.groupc.project.service.LoginService;
-import edu.groupc.project.service.LoginServiceImpl;
 
 /**
  * Servlet implementation class ApplicationStart
  */
-@WebServlet("/LoginController")
-public class LoginController extends HttpServlet {
+@WebServlet("/AccountHomeController")
+public class AccountHomeController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AccountHomeController.class);
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
 	Connection connection = null;
 
-	public LoginController() {
+	public AccountHomeController() {
 		super();
 
 	}
@@ -72,29 +68,13 @@ public class LoginController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		request.getSession().removeAttribute("user");
-		request.setAttribute("status", "Logged Out Sucessfully!!");
-		request.getRequestDispatcher("WEB-INF/jsp/Login.jsp").forward(request, response);
+		request.getRequestDispatcher("WEB-INF/jsp/AccountHome.jsp").forward(request, response);
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		LoginForm loginForm = new LoginForm();
-		loginForm.setUserName(request.getParameter("username"));
-		loginForm.setPassword(request.getParameter("password"));
-		LoginService loginService = new LoginServiceImpl();
-		UserValueBean userValueBean = null;
-		try {
-			userValueBean = loginService.getUserDetails(loginForm, connection);
-		} catch (SQLException e) {
-			LOGGER.error("Unable to fetch user details Exception: " + e.toString());
-		}
-		request.getSession().setAttribute("user", userValueBean);
-		request.getRequestDispatcher("WEB-INF/jsp/AccountHome.jsp").forward(request, response);
-	}
+	
 
 }

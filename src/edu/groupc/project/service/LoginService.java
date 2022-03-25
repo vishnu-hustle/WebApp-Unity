@@ -1,6 +1,7 @@
 package edu.groupc.project.service;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import edu.groupc.project.beans.LoginForm;
 import edu.groupc.project.beans.UserValueBean;
@@ -15,5 +16,5 @@ import edu.groupc.project.beans.UserValueBean;
  */
 public interface LoginService {
 
-	public UserValueBean getUserDetails(LoginForm loginForm, Connection con);
+	public UserValueBean getUserDetails(LoginForm loginForm, Connection con) throws SQLException;
 }
