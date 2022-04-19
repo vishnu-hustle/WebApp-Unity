@@ -23,7 +23,7 @@
 
 <body
 	style="background-color: #ADD9F4; display: flex; align-items: center; justify-content: center; height: auto;">
-
+<div class="container-fluid">
 
 	<form name="registrationForm" action="./registrationController"
 		method="post">
@@ -31,8 +31,8 @@
 			String responseStr = (String) request.getAttribute("status");
 			request.removeAttribute("status");
 		%>
-		<div class="container-fluid">
-			<h1>Registration Form</h1>
+		
+			<h1 class="text-center">Registration Form</h1>
 			<br />
 
 			<div class="row">
@@ -144,8 +144,9 @@
 
 			<input type="submit" class="btn btn-success mt-2" value="Submit" />
 
-		</div>
+		
 	</form>
+	</div>
 	<%
 		if (responseStr != null) {
 	%>

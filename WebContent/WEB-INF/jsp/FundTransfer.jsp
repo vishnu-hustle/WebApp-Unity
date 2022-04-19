@@ -290,7 +290,7 @@
 				var res =document.querySelector('input[name="accNum"]:checked').value.split("#");
 				//alert(document.querySelector('input[name="transferType"]:checked').value);
 				var res =document.querySelector('input[name="accNum"]:checked').value.split("#");
-				if(document.querySelector('input[name="transferType"]:checked').value==2 && res[1]< document.getElementById("amount").value){
+				if(document.querySelector('input[name="transferType"]:checked').value==2 &&  parseFloat(res[1])< parseFloat(document.getElementById("amountCash").value)){
 					alert("Transfer amount is greater than present balance");
 				}else{
 					document.getElementById("tranTypeHidden").value=document.querySelector('input[name="transferType"]:checked').value;
@@ -312,7 +312,7 @@
 								'./CashTransactionController');
 						$("#flow").val("cash");
 						var res =document.querySelector('input[name="accNum"]:checked').value.split("#");
-						if(document.querySelector('input[name="transactionType"]:checked').value==2 && res[1]< document.getElementById("amountCash").value){
+						if(document.querySelector('input[name="transactionType"]:checked').value==2 && parseFloat(res[1])< parseFloat(document.getElementById("amountCash").value)){
 							alert(" Debit amount is greater than present balance");
 						}else{
 						document.getElementById("fromAccountCash").value=res[0];
