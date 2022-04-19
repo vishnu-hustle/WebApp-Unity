@@ -7,169 +7,320 @@
 <html>
 <head>
 <meta charset="ISO-8859-1">
-<title>Bank Portal</title>
+<title>Bank Portal - GROUP C</title>
 <link rel="stylesheet"
 	href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <script src=https://code.jquery.com/jquery-1.12.4.js></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-<link rel="stylesheet"
-	href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
-	integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-	crossorigin="anonymous">
-<link rel="stylesheet"
-	href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css"
-	integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+	rel="stylesheet"
+	integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
 	crossorigin="anonymous">
 <script
-	src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
-	integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+	integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
 	crossorigin="anonymous"></script>
+
 <!-- Load an icon library -->
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+<style type="text/css">
+.navbar {
+	background-color: #ADD9F4;
+	border-radius: 4px;
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+}
+
+.navbar a {
+	color: black;
+	letter-spacing: 2px;
+	text-decoration: none;
+}
+
+#formContainer {
+	background-color: #DAF7DC;
+	display: flex;
+	justify-content: center;
+	min-height: 100vh;
+}
+
+.editBtn, .submitBtn, .accountBtn, .removeBtn {
+	letter-spacing: 2px;
+	border-radius: 10px;
+}
+
+.tableData {
+	
+}
+</style>
+
+
 </head>
 <body>
-<form name="fundTransfer" id="fundTransfer" action="./FundTransferController"
-		method="post">
-	<%
-UserValueBean userValueBean = (UserValueBean)request.getSession().getAttribute("user");
-String responseStr=(String)request.getAttribute("status");
-request.removeAttribute("status");
-System.out.println(responseStr);
-%>
 	<div class="navbar">
-		<a class="active" href="./AccountHomeController"><i class="fa fa-fw fa-institution"></i>
-			Home</a> <a href="./CustomerProfileController"><i
+		<a class="active" href="./AccountHomeController"><i
+			class="fa fa-fw fa-institution"></i> Home</a> <a
+			href="./CustomerProfileController"><i
 			class="fa fa-fw fa-user-circle-o"></i> Customer Profile</a> <a
 			href="./AccountDetailsController"><i class="fa fa-fw fa-group"></i>
-			Account Details</a> <a href="./FundTransferController"><i class="fa fa-fw fa-dollar"></i>
-			Fund Transfer</a> <a href="./LoginController"><i class="fa fa-fw fa-user"></i> Logout</a>
+			Account Details</a> <a href="./FundTransferController"><i
+			class="fa fa-fw fa-dollar"></i> Fund Transfer</a> <a
+			href="./LoginController"><i class="fa fa-fw fa-user"></i> Logout</a>
 	</div>
-	<%if(responseStr!=null) {%>
-	<h3>
-		<%
-            out.print(responseStr);
-        %>
-	</h3>
-	<%} %>
-	<table width="900" cellspacing="0" cellpadding="0">
-		<tr>
-			<td>Accounts</td>
-			<td>IFSC CODE</td>
-			<td>Branch Name</td>
-			<td>Balance</td>
 
-		</tr>
-		<%
-int i=0;
-for (Entry<String, AccountDetailsValueBean> entry : userValueBean.getAccountDetailsValueBean().entrySet()) {
+	<div class="container mt-5">
+		<form name="fundTransfer" id="fundTransfer"
+			action="./FundTransferController" method="post">
+			<%
+				UserValueBean userValueBean = (UserValueBean) request.getSession().getAttribute("user");
+				String responseStr = (String) request.getAttribute("status");
+				request.removeAttribute("status");
+			%>
+
+			<table class="table">
+				<thead>
+					<tr>
+						<th></th>
+						<th>Accounts</th>
+						<th>IFSC CODE</th>
+						<th>Branch Name</th>
+						<th>Balance</th>
+					</tr>
+				</thead>
+				<tbody>
+
+					<%
+						int i = 0;
+						for (Entry<String, AccountDetailsValueBean> entry : userValueBean.getAccountDetailsValueBean().entrySet()) {
+
+							AccountDetailsValueBean accountDetailsValueBean = (AccountDetailsValueBean) entry.getValue();
+					%>
+					<tr>
+						<td><input class="form-check-input" type="radio" id="accNum"
+							name="accNum"
+							value="<%=accountDetailsValueBean.getAccountNumber() + "#" +accountDetailsValueBean.getBalance() %>" /></td>
+						<td>
+							<%
+								out.print(accountDetailsValueBean.getAccountNumber());
+							%>
+						</td>
+
+						<td>
+							<%
+								out.print(accountDetailsValueBean.getIfscCode());
+							%>
+						</td>
+						<td>
+							<%
+								out.print(accountDetailsValueBean.getBranchName());
+							%>
+						</td>
+						<td>
+							<%
+								out.print(accountDetailsValueBean.getBalance());
+							%>
+						</td>
+
+					</tr>
 
 
 
-	AccountDetailsValueBean accountDetailsValueBean = (AccountDetailsValueBean) entry.getValue();
-	%>
-		<tr>
-			<td><input type="radio" id="accNum" name="accNum"
-				value="<%=accountDetailsValueBean.getAccountNumber()%>" /><%
-            out.print(accountDetailsValueBean.getAccountNumber());
-        %></td>
 
-			<td>
+					<%
+						i++;
+						}
+					%>
+				</tbody>
+			</table>
+
+			<div class="mt-4">
+				<input type="button" class="btn btn-primary accountBtn"
+					id="transferButton" value="Transfer" /> <input type="button"
+					class="btn btn-warning accountBtn" id="CreditDebitButton"
+					value="Credit/Debit" />
 				<%
-            out.print(accountDetailsValueBean.getIfscCode());
-        %>
-			</td>
-			<td>
+					if (responseStr != null) {
+				%>
+				<br />
+				<br />
+				<div
+					class="alert alert-success alert-dismissible d-flex align-items-center fade show">
+					<i class="bi-check-circle-fill"></i> <strong class="mx-2">Success!</strong>
+					<%=responseStr%>
+					<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+				</div>
+
 				<%
-            out.print(accountDetailsValueBean.getBranchName());
-        %>
-			</td>
-			<td>
-				<%
-            out.print(accountDetailsValueBean.getBalance());
-        %>
-			</td>
+					}
+				%>
+				<input type="hidden" id="flow" name="flow" value="" />
+				<div id="transferDiv" class="mt-4">
 
-		</tr>
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" name="transferType"
+							id="transferType" value="1" checked> <label
+							class="form-check-label" for="inlineRadio1">TO MY ACCOUNT</label>
+					</div>
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" name="transferType"
+							id="transferType" value="2"> <label
+							class="form-check-label" for="inlineRadio1">TO OTHER
+							ACCOUNT</label>
+					</div>
 
+					<input type="hidden" id="fromAccount" name="fromAccount" value="" />
+					<input type="hidden" id="tranTypeHidden" name="tranTypeHidden" value="1" />
 
+					<div class="row mt-2">
+						<label for="accountNumber" class="form-label">Account
+							Number : </label>
+						<div class="col-lg-6">
+							<input type="text" class="form-control" id="accountNumber"
+								name="accountNumber" placeholder="Account Number" value="" pattern="[a-zA-Z0-9 ]+" required
+								oninvalid="this.setCustomValidity('Enter Valid Account Number Here')"
+								oninput="this.setCustomValidity('')">
+						</div>
+					</div>
 
+					<div class="row mt-2">
+						<label for="accountNumberConfirm" class="form-label">ReEnter
+							Account Number :</label>
+						<div class="col-lg-6">
+							<input type="text" class="form-control" id="accountNumberConfirm"
+								name="accountNumberConfirm" placeholder="ReEnter Account Number"
+								value="" pattern="[a-zA-Z0-9 ]+" required
+								oninvalid="this.setCustomValidity('Enter Valid Account Number Here')"
+								oninput="this.setCustomValidity('')">
+						</div>
+					</div>
 
-		<%
-	i++;
-}
-%>
-	</table>
-	
-		<input type="button" id="transferButton" value="Transfer" />
-		<input type="button" id="CreditDebitButton" value="Credit/Debit" />
-		<input type="hidden" id="flow" name="flow" value=""/>
-		<div id="transferDiv">
-		<input type="radio" id="transferType"  name="transferType" value=1 />TO MY ACCOUNT
-		<input type="radio" id="transferType"  name="transferType" value=2 />TO OTHER ACCOUNT
-		<input type="hidden" id="fromAccount" name="fromAccount" value=""/>
-		<label for="accountNumber">Account Number : </label> <input
-			type="text" id="accountNumber" name="accountNumber" value="" /><br>
-		<br> <label for="accountNumberConfirm">ReEnter Account
-			Number : </label> <input type="text" id="accountNumberConfirm"
-			name="accountNumberConfirm" value="" /><br>
-		<br> <label for="ifscCode">IFSC code : </label> <input
-			type="text" id="ifscCode" name="ifscCode" value="" /><br>
-		<br> <label for="branchName">Branch Name : </label> <input
-			type="text" id="branchName" name="branchName" value="" /><br>
-			<label for="amount">Amount : </label> <input
-			type="text" id="amount" name="amount" value="" /><br>
-		<br> <input type="submit" id="send" value="Send" />
-		</div>
-		<div id="creditDebitDiv">
-		<input type="radio" id="transactionType" name="transactionType" value=1 />CREDIT
-		<input type="radio" id="transactionType" name="transactionType" value=2 />DEBIT
-		<input type="hidden" id="fromAccountCash" name="fromAccountCash" value=""/>
-		<label for="amountCash">Amount : </label> <input
-			type="text" id="amountCash" name="amountCash" value="" /><br>
-		<br> <input type="submit" id="complete" value="Complete" />
-		</div>
-	</form>
+					<div class="row mt-2">
+						<label for="ifscCode" class="form-label">IFSC code :</label>
+						<div class="col-lg-6">
+							<input type="text" class="form-control" id="ifscCode"
+								name="ifscCode" placeholder="IFSC Code" value="" pattern="[a-zA-Z0-9 ]+" required
+								oninvalid="this.setCustomValidity('Enter Valid IFSC code Here')"
+								oninput="this.setCustomValidity('')">
+						</div>
+					</div>
+
+					<div class="row mt-2">
+						<label for="branchName" class="form-label">Branch Name : </label>
+						<div class="col-lg-6">
+							<input type="text" class="form-control" id="branchName"
+								name="branchName" placeholder="Branch Name" value="" 
+								pattern="[a-zA-Z]+" required
+								oninvalid="this.setCustomValidity('Enter Valid Branch Name Here')"
+								oninput="this.setCustomValidity('')">
+						</div>
+					</div>
+
+					<div class="row mt-2">
+						<label for="amount" class="form-label">Amount : </label>
+						<div class="col-lg-6">
+							<input type="text" class="form-control" id="amount" name="amount"
+								placeholder="Amount" value="" pattern="(\d{3})([\.])(\d{2})" required
+						oninvalid="this.setCustomValidity('Enter Valid Amount Here')"
+						oninput="this.setCustomValidity('')">
+								
+						</div>
+					</div>
+					<br> <input type="button" class="btn btn-success" id="send"
+						value="Send" />
+				</div>
+
+				<div id="creditDebitDiv" class="mt-4">
+					<div class="form-check form-check-inline">
+						<input class="form-check-input"  type="radio" 
+							name="transactionType" id="transactionType" value="1" checked> <label
+							class="form-check-label" for="inlineRadio1" >CREDIT</label>
+					</div>
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio"
+							name="transactionType" id="transactionType" value="2"> <label
+							class="form-check-label" for="inlineRadio1">DEBIT</label>
+					</div>
+
+					<input type="hidden" id="fromAccountCash" name="fromAccountCash"
+						value="" />
+
+					<div class="row mt-2">
+						<label for="amountCash" class="form-label">Amount : </label>
+						<div class="col-lg-6">
+							<input type="text" class="form-control" id="amountCash"
+								name="amountCash" placeholder="Amount Cash" value="" pattern="(\d{3})([\.])(\d{2})" required
+						oninvalid="this.setCustomValidity('Enter Valid Amount Here')"
+						oninput="this.setCustomValidity('')">
+						</div>
+					</div>
+
+					<br> <input type="button" class="btn btn-success"
+						id="complete" value="Complete" />
+				</div>
+			</div>
+		</form>
+	</div>
 	<script>
-$( function() {
-	$( "#transferDiv" ).hide();
-	$( "#creditDebitDiv" ).hide();
-	$('#transferButton').prop('disabled', true);
-	$('#CreditDebitButton').prop('disabled', true);	
-		$('input:radio[name="accNum"]').change(
-			    function(){
-			    	$( "#fromAccount" ).val($(this).val());
-			    	 $( "#fromAccountCash" ).val($(this).val());
-    	$('#transferButton').prop('disabled', false);	
-    	$('#CreditDebitButton').prop('disabled', false);	
-    });
-	 $( "#transferButton" ).click(function() {
-		 	$( "#transferDiv" ).show();
-		 	 $( "#send" ).prop('disabled', true);
-		 	$( "#creditDebitDiv" ).hide();
-		 	$('#CreditDebitButton').prop('disabled', true);	
-	    	
-	    });
-	$('input:radio[name="transferType"]').change(
-			    function(){
-		 $( "#send" ).prop('disabled', false);
-	 });
-	 
-	 $( "#send" ).click(function() {
-		 $( "#flow" ).val("transfer");
-	 });
-	 $( "#CreditDebitButton" ).click(function() {
-		 $( "#transferDiv" ).hide();
-		 $('#transferButton').prop('disabled', true);
-	 	$( "#creditDebitDiv" ).show();
-	 	$('#CreditDebitButton').prop('disabled', false);	
-	 });
-	 $( "#complete" ).click(function() {
-		 $('#fundTransfer').attr('action', './CashTransactionController');
-		 $( "#flow" ).val("cash");
-		 $( "#fromAccountCash" ).val($( "#accNum" ).val());
-	 });
-});
-</script>
+		$(function() {
+			$("#transferDiv").hide();
+			$("#creditDebitDiv").hide();
+			$('#transferButton').prop('disabled', true);
+			$('#CreditDebitButton').prop('disabled', true);
+			$('input:radio[name="accNum"]').change(function() {
+				$('#transferButton').prop('disabled', false);
+				$('#CreditDebitButton').prop('disabled', false);
+			});
+			$("#transferButton").click(function() {
+				$("#transferDiv").show();
+				$("#send").prop('disabled', true);
+				$("#creditDebitDiv").hide();
+				$('#CreditDebitButton').prop('disabled', true);
+
+			});
+			$('input:radio[name="transferType"]').change(function() {
+				$("#send").prop('disabled', false);
+			});
+
+			$("#send").click(function() {
+				var res =document.querySelector('input[name="accNum"]:checked').value.split("#");
+				//alert(document.querySelector('input[name="transferType"]:checked').value);
+				var res =document.querySelector('input[name="accNum"]:checked').value.split("#");
+				if(document.querySelector('input[name="transferType"]:checked').value==2 && res[1]< document.getElementById("amount").value){
+					alert("Transfer amount is greater than present balance");
+				}else{
+					document.getElementById("tranTypeHidden").value=document.querySelector('input[name="transferType"]:checked').value;
+				document.getElementById("fromAccount").value=res[0];
+				$("#flow").val("transfer");
+				$('#fundTransfer').submit();
+				}
+
+			});
+			$("#CreditDebitButton").click(function() {
+				$("#transferDiv").hide();
+				$('#transferButton').prop('disabled', true);
+				$("#creditDebitDiv").show();
+				$('#CreditDebitButton').prop('disabled', false);
+			});
+			$("#complete").click(
+					function() {
+						$('#fundTransfer').attr('action',
+								'./CashTransactionController');
+						$("#flow").val("cash");
+						var res =document.querySelector('input[name="accNum"]:checked').value.split("#");
+						if(document.querySelector('input[name="transactionType"]:checked').value==2 && res[1]< document.getElementById("amountCash").value){
+							alert(" Debit amount is greater than present balance");
+						}else{
+						document.getElementById("fromAccountCash").value=res[0];
+						$('#fundTransfer').submit();
+						}
+
+					});
+		});
+	</script>
 </body>
 </html>

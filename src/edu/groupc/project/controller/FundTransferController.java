@@ -100,7 +100,7 @@ public class FundTransferController extends HttpServlet {
 		fundTransferFormBean.setTransferAccountNumber(request.getParameter("accountNumber"));
 		fundTransferFormBean.setTransferIfscCode(request.getParameter("ifscCode"));
 		fundTransferFormBean.setTransferAmount(Double.parseDouble(request.getParameter("amount")));
-		int type = Integer.parseInt(request.getParameter("transferType"));
+		int type = Integer.parseInt(request.getParameter("tranTypeHidden"));
 		if (type == 1) {
 			fundTransferFormBean.setWithin(true);
 		} else {

@@ -93,8 +93,13 @@ public class LoginController extends HttpServlet {
 		} catch (SQLException e) {
 			LOGGER.error("Unable to fetch user details Exception: " + e.toString());
 		}
+		if(userValueBean!=null && userValueBean.getAccountDetailsValueBean()!=null) {
 		request.getSession().setAttribute("user", userValueBean);
 		request.getRequestDispatcher("WEB-INF/jsp/AccountHome.jsp").forward(request, response);
+		}else {
+			request.setAttribute("status", "Invalid Username or Password!!!");
+			request.getRequestDispatcher("WEB-INF/jsp/Login.jsp").forward(request, response);
+		}
 	}
 
 }
